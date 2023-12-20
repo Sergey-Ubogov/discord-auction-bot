@@ -1,12 +1,8 @@
-import fs from 'fs/promises';
-import path from 'path';
 import dotenv from 'dotenv';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
-import { fileURLToPath } from 'url';
+import { AllCommands } from './commands/index.js';
 
 dotenv.config();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -49,21 +45,9 @@ client.login(token);
 
 async function setCommands(client: Client) {
     client.commands = new Collection();
-    const foldersPath = path.join(__dirname, 'commands');
-    const commandFolders = await fs.readdir(foldersPath);
+    const commands = AllCommands;
 
-    for (const folder of commandFolders) {
-        const commandsPath = path.join(foldersPath, folder);
-        const commandFiles = (await fs.readdir(commandsPath)).filter(file => file.endsWith('.js'));
-        for (const file of commandFiles) {
-            const filePath = path.join('file:///', commandsPath, file);
-            const command = (await import(filePath)).default;
-            // Set a new item in the Collection with the key as the command name and the value as the exported module
-            if ('data' in command && 'execute' in command) {
-                client.commands.set(command.data.name, command);
-            } else {
-                console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-            }
-        }
-    }
+    commands.forEach(command => {
+        client.commands.set(command.data.name, command);
+    })
 }

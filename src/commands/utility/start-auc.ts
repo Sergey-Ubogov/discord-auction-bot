@@ -13,6 +13,7 @@ export const StartAucCommand: BotCommand = {
 
         if (hasAuctionRole) {
 		    await interaction.reply(`Пользователь ${nickName} начал аукцион!`);
+            return;
         }
         
         await interaction.reply(`Пользователь ${nickName} не имеет роль ${auctionRoleName}, которая требуется для старта аукциона`)
