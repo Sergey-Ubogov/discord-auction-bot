@@ -4,7 +4,11 @@ import { AllCommands } from './commands/index.js';
 
 dotenv.config();
 
-const { DISCORD_TOKEN: token, APPLICATION_ID: clientId, GUILD_ID: guildId } = process.env;
+const {
+    DISCORD_TOKEN: token,
+    APPLICATION_ID: clientId,
+    GUILD_ID: guildId,
+} = process.env;
 
 deployCommands();
 
@@ -16,15 +20,19 @@ async function deployCommands() {
 
     // and deploy your commands!
     try {
-        console.log(`Started refreshing ${commands.length} application (/) commands.`);
+        console.log(
+            `Started refreshing ${commands.length} application (/) commands.`
+        );
 
         // The put method is used to fully refresh all commands in the guild with the current set
-        const data = await rest.put(
+        const data = (await rest.put(
             Routes.applicationGuildCommands(clientId, guildId),
-            { body: commands },
-        ) as {length: number};
+            { body: commands }
+        )) as { length: number };
 
-        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+        console.log(
+            `Successfully reloaded ${data.length} application (/) commands.`
+        );
     } catch (error) {
         // And of course, make sure you catch and log any errors!
         console.error(error);
