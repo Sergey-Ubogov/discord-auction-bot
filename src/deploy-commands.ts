@@ -13,7 +13,7 @@ const {
 deployCommands();
 
 async function deployCommands() {
-    const commands = AllCommands;
+    const commands = AllCommands.map((command) => command.data.toJSON());
 
     // Construct and prepare an instance of the REST module
     const rest = new REST().setToken(token);
