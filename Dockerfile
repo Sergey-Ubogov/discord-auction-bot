@@ -4,4 +4,6 @@ workdir /app
 copy . /app
 
 run npm ci
+
+EXPOSE 8080
 CMD ["npm", "start"]
