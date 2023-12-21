@@ -8,6 +8,7 @@
         "build": "tsc",
         "start": "tsc && node build/index.js",
         "deploy-commands": "tsc && node build/deploy-commands.js",
+        "start-health-server": "tsc && node build/health.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "prepare": "husky install"
     },

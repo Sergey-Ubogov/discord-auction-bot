@@ -26,7 +26,7 @@ export const StartAucCommand: BotCommand = {
                 .setName('count_lots')
                 .setDescription('Количество лотов для разыгрывания')
                 .setMinValue(1)
-                .setMaxValue(25)
+                .setMaxValue(24)
                 .setRequired(true)
         )
         .addNumberOption((option) =>
@@ -41,15 +41,6 @@ export const StartAucCommand: BotCommand = {
                 .setName('bid_step')
                 .setDescription('Шаг ставки')
                 .setMinValue(1000)
-                .setRequired(true)
-        )
-        .addNumberOption((option) =>
-            option
-                .setName('time')
-                .setDescription(
-                    'Время аукциона (в минутах, 12ч = 720мин, 24ч = 1440мин)'
-                )
-                .setMinValue(1)
                 .setRequired(true)
         )
         .setDescription('Команда для старта аукциона'),
@@ -72,13 +63,18 @@ export const StartAucCommand: BotCommand = {
         const countLots = interaction.options.getNumber('count_lots', true);
         const startBid = interaction.options.getNumber('start_bid', true);
         const bidStep = interaction.options.getNumber('bid_step', true);
-        const time = interaction.options.getNumber('time', true);
 
         const buttons = [...new Array(countLots)].map((_, index) =>
             new ButtonBuilder()
                 .setCustomId(`lot-number-${index + 1}`)
                 .setLabel(formatBid(startBid))
                 .setStyle(ButtonStyle.Primary)
+        );
+        buttons.push(
+            new ButtonBuilder()
+                .setCustomId('stop-auc-button')
+                .setLabel('Завершить аукцион')
+                .setStyle(ButtonStyle.Danger)
         );
 
         const rows = getRows(buttons);
@@ -88,20 +84,34 @@ export const StartAucCommand: BotCommand = {
 Количество лотов: ${countLots}.
 Стартовая ставка на лот: ${formatBid(startBid)}.
 Шаг ставки: ${formatBid(bidStep)}.
-Время проведения аукциона: ${formatTime(time)}.
 `,
             components: rows,
         });
 
         const collector = response.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: time * 60 * 1000,
         });
 
         collector.on('collect', async (i) => {
-            i.update({
-                components: getUpdatedComponents(i, bidStep),
-            });
+            if (i.customId === 'stop-auc-button') {
+                const member = i.member as GuildMember;
+                const hasAuctionRole = member.roles.cache.some(
+                    (_role) => _role.name.toLowerCase() === auctionRoleName
+                );
+                if (hasAuctionRole) {
+                    collector.stop();
+                } else {
+                    interaction.followUp(
+                        `${getNickName(
+                            i
+                        )} попытался завершить аукцион, но у него нет для этого прав`
+                    );
+                }
+            } else {
+                i.update({
+                    components: getUpdatedComponents(i, bidStep),
+                });
+            }
         });
 
         collector.on('end', (collected) => {

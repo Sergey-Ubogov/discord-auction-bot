@@ -19,6 +19,9 @@ export function getUpdatedComponents<T extends ButtonComponent>(
         updatedActionRow.addComponents(
             oldActionRow.components.map((buttonComponent: ButtonComponent) => {
                 const newButton = ButtonBuilder.from(buttonComponent);
+                if (buttonComponent.customId === 'stop-auc-button') {
+                    return newButton;
+                }
 
                 if (
                     (i.component as ButtonComponent).customId ==
