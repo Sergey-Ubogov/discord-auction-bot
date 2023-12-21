@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
 import { AllCommands } from './commands/index.js';
-
-dotenv.config();
+import './health.js';
 
 dotenv.config();
 

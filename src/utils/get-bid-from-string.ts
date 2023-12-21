@@ -1,13 +1,14 @@
-export function getBidFromString(str: string) {
-    const [strBid, nickName] = str.split(' ');
+export function getBidAndNickNameFromString(str: string) {
+    const [strBid, nickName = ''] = str.split(' ');
+    let bid: number;
 
     if (strBid.endsWith('M')) {
-        return parseInt(strBid) * 1000000;
+        bid = parseFloat(strBid) * 1000000;
+    } else if (strBid.endsWith('K')) {
+        bid = parseFloat(strBid) * 1000;
+    } else {
+        bid = parseFloat(strBid);
     }
 
-    if (strBid.endsWith('K')) {
-        return parseInt(strBid) * 1000;
-    }
-
-    return parseInt(strBid);
+    return { bid, nickName };
 }

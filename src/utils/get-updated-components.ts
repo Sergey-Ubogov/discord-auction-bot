@@ -5,7 +5,7 @@ import {
     ButtonInteraction,
     ButtonStyle,
 } from 'discord.js';
-import { getBidFromString } from './get-bid-from-string.js';
+import { getBidAndNickNameFromString } from './get-bid-from-string.js';
 import { formatBid } from './format-bid.js';
 import { getNickName } from './get-nick-name.js';
 
@@ -19,7 +19,7 @@ export function getUpdatedComponents<T extends ButtonComponent>(
         updatedActionRow.addComponents(
             oldActionRow.components.map((buttonComponent: ButtonComponent) => {
                 const newButton = ButtonBuilder.from(buttonComponent);
-                if (buttonComponent.customId === 'stop-auc-button') {
+                if (!buttonComponent.customId.startsWith('lot-number')) {
                     return newButton;
                 }
 
@@ -27,12 +27,13 @@ export function getUpdatedComponents<T extends ButtonComponent>(
                     (i.component as ButtonComponent).customId ==
                     buttonComponent.customId
                 ) {
-                    const oldBid = getBidFromString(newButton.data.label);
-                    const newBid = oldBid + bidStep;
+                    const { bid: oldBid, nickName: oldNickName } =
+                        getBidAndNickNameFromString(newButton.data.label);
                     const newNickName = getNickName(i);
+                    const newBid = oldNickName ? oldBid + bidStep : oldBid;
 
                     newButton.setLabel(`${formatBid(newBid)} ${newNickName}`);
-                    newButton.setStyle(ButtonStyle.Success);
+                    newButton.setStyle(ButtonStyle.Primary);
                 }
                 return newButton;
             })

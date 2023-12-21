@@ -8,3 +8,5 @@ export function startHealthServer() {
         })
         .listen(8080);
 }
+
+startHealthServer();

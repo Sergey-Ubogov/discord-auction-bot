@@ -5,4 +5,5 @@ copy . /app
 
 run npm ci
 
-CMD ["npm", "start"]
+EXPOSE 8080
+CMD [ "npm", "run", "deploy-commands-and-start" ]
